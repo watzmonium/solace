@@ -1,53 +1,44 @@
 "use client";
 
-import { Advocate } from "@/db/types";
+import { Advocate } from "@/app/types";
 import { useEffect, useState } from "react";
 
 const SEARCH_DEBOUNCE_DELAY = 300;
+const DEFAULT_ITEMS_PER_PAGE = 10;
 
 export default function Home() {
   const [advocates, setAdvocates] = useState<Advocate[]>([]);
-  const [filteredAdvocates, setFilteredAdvocates] = useState<Advocate[]>([]);
   const [searchText, setSearchText] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
+  const totalPages = Math.ceil(totalCount / DEFAULT_ITEMS_PER_PAGE);
   useEffect(() => {
     fetchAdvocates();
-  }, []);
-
-  useEffect(() => {
-    const searchTimeout = setTimeout(() => {
-      const term = searchText.toLowerCase();
-
-      const filtered = advocates.filter((advocate) => {
-        return (
-          advocate.firstName.toLowerCase().includes(term) ||
-          advocate.lastName.toLowerCase().includes(term) ||
-          advocate.city.toLowerCase().includes(term) ||
-          advocate.degree.toLowerCase().includes(term) ||
-          advocate.specialties.some((s) => s.toLowerCase().includes(term)) ||
-          advocate.yearsOfExperience.toString().includes(term) ||
-          advocate.phoneNumber.toString().includes(term)
-        );
-      });
-
-      setFilteredAdvocates(filtered);
-    }, SEARCH_DEBOUNCE_DELAY);
-
-    return () => clearTimeout(searchTimeout);
-  }, [searchText, advocates]);
+  }, [currentPage]);
 
   const fetchAdvocates = async () => {
     try {
-      const response = await fetch("/api/advocates");
+      const response = await fetch(
+        `/api/advocates?page=${currentPage}&pageSize=${DEFAULT_ITEMS_PER_PAGE}&searchTerm=${searchText}`
+      );
       const jsonResponse = await response.json();
-      setAdvocates(jsonResponse.data);
-      setFilteredAdvocates(jsonResponse.data);
+      setAdvocates(jsonResponse.advocates);
+      setTotalCount(jsonResponse.totalCount);
     } catch (e) {
       if (e instanceof Error) {
         console.log(e.message);
       }
     }
   };
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      fetchAdvocates();
+    }, SEARCH_DEBOUNCE_DELAY);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchText]);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const searchTerm = e.target.value;
@@ -56,7 +47,11 @@ export default function Home() {
 
   const onClick = () => {
     setSearchText("");
-    setFilteredAdvocates(advocates);
+    setCurrentPage(1);
+  };
+
+  const onPageChange = (newPage: number) => {
+    setCurrentPage(newPage);
   };
 
   return (
@@ -66,9 +61,7 @@ export default function Home() {
       <br />
       <div>
         <p>Search</p>
-        <p>
-          Searching for: <span id="search-term"></span>
-        </p>
+        <p>Searching for: {searchText}</p>
         <input
           style={{ border: "1px solid black" }}
           value={searchText}
@@ -92,8 +85,8 @@ export default function Home() {
           </tr>
         </thead>
         <tbody>
-          {filteredAdvocates &&
-            filteredAdvocates.map((advocate) => {
+          {advocates &&
+            advocates.map((advocate) => {
               return (
                 <tr
                   key={`${advocate.firstName}-${advocate.lastName}-${advocate.phoneNumber}`}
@@ -116,6 +109,25 @@ export default function Home() {
             })}
         </tbody>
       </table>
+
+      <div>
+        {/* Pagination Controls */}
+        <button
+          disabled={currentPage === 1}
+          onClick={() => onPageChange(currentPage - 1)}
+        >
+          Previous
+        </button>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          disabled={currentPage === totalPages}
+          onClick={() => onPageChange(currentPage + 1)}
+        >
+          Next
+        </button>
+      </div>
     </main>
   );
 }
