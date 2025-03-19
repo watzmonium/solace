@@ -53,7 +53,7 @@ export default function Home() {
   const onPageChange = (newPage: number) => {
     setCurrentPage(newPage);
   };
-  console.log("Solace green color class: text-solaceGreen");
+
   return (
     <main className="px-8 py-6 bg-gray-50">
       <h1 className="text-3xl font-semibold text-center text-solaceGreen mb-6">
