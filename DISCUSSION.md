@@ -10,7 +10,7 @@ I'm going to list them here and talk about what I can and can't do in 2 hours, a
 3. No way to serve a minimized FE build
 4. Major bugs in the react code
 5. No pagination/filtering logic on DB queries
-6. Site is not user-friendly
+6. Site is not user-friendly or styled in any way
 
 If I had more time, I would create more containers on the docker compose - nginx, some kind of backend like express - and use those to run the production server.
 
@@ -39,3 +39,11 @@ Because I have 2 hours, I am going to focus on number 4-6 on this list, because 
   - improve app responsiveness
   - loading and no results logic
   - icons if time allows
+
+## Post-assignment
+
+I'm happy enough with how this turned out. I struggled a bit with the drizzle docs, but I was able to get it to work
+The search is kind of wonky, but I didn't want to take more than 2 hours with this.
+If I had more time, I might separate some html into components, and obviously proceed with the other things I mentioned at the top oft he list.
+
+Overall it was fun working on this! Thanks for the opportunity!

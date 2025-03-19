@@ -55,75 +55,91 @@ export default function Home() {
   };
 
   return (
-    <main style={{ margin: "24px" }}>
-      <h1>Solace Advocates</h1>
-      <br />
-      <br />
-      <div>
-        <p>Search</p>
-        <p>Searching for: {searchText}</p>
-        <input
-          style={{ border: "1px solid black" }}
-          value={searchText}
-          onChange={onChange}
-          placeholder="search..."
-        />
-        <button onClick={onClick}>Reset Search</button>
-      </div>
-      <br />
-      <br />
-      <table>
-        <thead>
-          <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>City</th>
-            <th>Degree</th>
-            <th>Specialties</th>
-            <th>Years of Experience</th>
-            <th>Phone Number</th>
-          </tr>
-        </thead>
-        <tbody>
-          {advocates &&
-            advocates.map((advocate) => {
-              return (
-                <tr
-                  key={`${advocate.firstName}-${advocate.lastName}-${advocate.phoneNumber}`}
-                >
-                  <td>{advocate.firstName}</td>
-                  <td>{advocate.lastName}</td>
-                  <td>{advocate.city}</td>
-                  <td>{advocate.degree}</td>
-                  <td>
-                    {advocate.specialties.map((s) => (
-                      <div key={`${advocate.firstName}-${advocate.lastName}-${s}`}>
-                        {s}
-                      </div>
-                    ))}
-                  </td>
-                  <td>{advocate.yearsOfExperience}</td>
-                  <td>{advocate.phoneNumber}</td>
-                </tr>
-              );
-            })}
-        </tbody>
-      </table>
+    <main className="px-8 py-6 bg-gray-50">
+      <h1 className="text-3xl font-semibold text-center text-solaceGreen mb-6">
+        Solace Advocates
+      </h1>
 
-      <div>
-        {/* Pagination Controls */}
+      <div className="mb-6">
+        <div className="flex items-center gap-4">
+          <input
+            className="p-2 border-2 border-green-500 rounded-md w-1/3"
+            value={searchText}
+            onChange={onChange}
+            placeholder="Search by name, city, or degree"
+          />
+          <button
+            onClick={onClick}
+            className="p-2 bg-solaceGreen text-white rounded-md hover:bg-green-600 transition"
+          >
+            Reset Search
+          </button>
+        </div>
+        {searchText && <p className="mt-2 text-gray-500">Searching for: {searchText}</p>}
+      </div>
+
+      <div className="overflow-x-auto bg-white shadow-md rounded-lg">
+        <table className="min-w-full">
+          <thead>
+            <tr className="bg-green-100 text-green-700">
+              <th className="py-2 px-4 border-b">First Name</th>
+              <th className="py-2 px-4 border-b">Last Name</th>
+              <th className="py-2 px-4 border-b">City</th>
+              <th className="py-2 px-4 border-b">Degree</th>
+              <th className="py-2 px-4 border-b">Specialties</th>
+              <th className="py-2 px-4 border-b">Years of Experience</th>
+              <th className="py-2 px-4 border-b">Phone Number</th>
+            </tr>
+          </thead>
+          <tbody>
+            {advocates &&
+              advocates.map((advocate, index) => {
+                const rowClass = index % 2 === 0 ? "bg-green-50" : "bg-white";
+                return (
+                  <tr
+                    key={`${advocate.firstName}-${advocate.lastName}-${advocate.phoneNumber}`}
+                    className={rowClass}
+                  >
+                    <td className="py-2 px-4 border-b">{advocate.firstName}</td>
+                    <td className="py-2 px-4 border-b">{advocate.lastName}</td>
+                    <td className="py-2 px-4 border-b">{advocate.city}</td>
+                    <td className="py-2 px-4 border-b">{advocate.degree}</td>
+                    <td className="py-2 px-4 border-b">
+                      {advocate.specialties.map((s) => (
+                        <div
+                          key={`${advocate.firstName}-${advocate.lastName}-${s}`}
+                          className="text-sm"
+                        >
+                          {s}
+                        </div>
+                      ))}
+                    </td>
+                    <td className="py-2 px-4 border-b">{advocate.yearsOfExperience}</td>
+                    <td className="py-2 px-4 border-b">{advocate.phoneNumber}</td>
+                  </tr>
+                );
+              })}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="flex justify-center items-center gap-4 mt-6">
         <button
           disabled={currentPage === 1}
           onClick={() => onPageChange(currentPage - 1)}
+          className="px-4 py-2 bg-green-500 text-white rounded-md disabled:bg-gray-400 hover:bg-green-600 transition"
         >
           Previous
         </button>
-        <span>
+
+        <span className="text-lg">
           Page {currentPage} of {totalPages}
         </span>
+
         <button
           disabled={currentPage === totalPages}
           onClick={() => onPageChange(currentPage + 1)}
+          className="px-4 py-2 bg-green-500 text-white rounded-md disabled:bg-gray-400 hover:bg-green-600 transition"
         >
           Next
         </button>
